@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator,  MinValueValidator
 from phone_field import PhoneField
 
 
@@ -18,7 +18,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
+    
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
         verbose_name = 'User'
@@ -50,7 +50,6 @@ class Email(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-
     def __str__(self):
         return self.name
 
@@ -64,7 +63,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     image = models.ManyToManyField(Image, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField(auto_now_add=True)
+    date =  models.DateField(auto_now_add=True)
     text = models.TextField()
     discount = models.IntegerField(
         validators=[
@@ -89,16 +88,16 @@ class Product(models.Model):
 
 class Review(models.Model):
     rating = models.FloatField(default=0,
-                               validators=[
-                                   MaxValueValidator(5),
-                                   MinValueValidator(0)
-                               ]
-                               )
+        validators=[
+            MaxValueValidator(5),
+            MinValueValidator(0)
+        ]
+    )
     text = models.TextField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    date = models.DateField(auto_now_add=True, unique=True)
+    date =  models.DateField(auto_now_add=True, unique=True)
 
 
 class ContactUs(models.Model):
@@ -126,30 +125,35 @@ class Card(models.Model):
         return self.product.title
 
 
-class Blogtext(models.Model):
-    text = models.CharField(max_length=100)
-
-
 class Blog(models.Model):
     img = models.ImageField(upload_to='blog/')
     title = models.CharField(max_length=255)
     text = models.TextField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    blogtext = models.ManyToManyField(Blogtext, blank=True, null=True)
+    blogtext = models.ManyToManyField('Blogtext', blank=True)
 
 
 class Reply(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
     website = models.CharField(max_length=255)
-    comment = models.TextField()
+    coment = models.TextField()
     name = models.CharField(max_length=100)
     email = models.EmailField()
+    data = models.DateField(auto_now_add=True)
 
 
-class Abouttext(models.Model):
+class Comment(models.Model):
+    replay_comment = models.ForeignKey(Reply, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    text = models.TextField()
+    data = models.DateField(auto_now_add=True)
+
+
+class Blogtext(models.Model):
     text = models.CharField(max_length=100)
 
+    
 
 class About(models.Model):
     img = models.ImageField(upload_to='About/')
@@ -158,7 +162,11 @@ class About(models.Model):
     text = models.TextField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    abouttext = models.ManyToManyField(Abouttext, blank=True, null=True)
+    abouttext = models.ManyToManyField('Abouttext', blank=True)
+
+
+class Abouttext(models.Model):
+    text = models.CharField(max_length=100)
 
 
 class Delivery_Options(models.Model):
