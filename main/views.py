@@ -1,4 +1,3 @@
-from urllib import request
 from django.shortcuts import render
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
@@ -35,8 +34,94 @@ class ProductDetail(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def retrieve(self, request, pk):
-        cate = Category.objects.get()
-        category = Product.objects.filter(cate_id=id)
-        cat = ProductSerializer(category, many=True)
-        return Response(cat.data)
+    # def retrieve(self, request, pk):
+    #     products = Product.objects.all()
+    #     all = []
+    #     for product in products:
+    #         data = {
+    #             "Product Info": product
+    #         }
+    #     dat = {
+    #         data,
+    #         "Similar Products":
+            
+    #     }
+
+class RewievGEt(APIView):
+    def get(self, request):
+        Data = {}
+        all_products = Product.objects.all()
+        for i in all_products:
+            a = Review.objects.filter(product_id=i.id)
+            for d in a:
+                i.rating += d.rating
+                Data[i.name] = i.rating/len(a)                
+        return Response(Data)
+
+class RewievPost(APIView):
+    def post(self, request):
+        try:
+            rating = request.POST['rating']
+            text = request.POST['text']
+            product = request.POST['product']
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            aaa = Review.objects.create(
+                rating=rating,
+                text=text,
+                product_id=product,
+                name=name,
+                email=email,
+            )
+            aaa.save()
+            all_products = Product.objects.all()
+            for i in all_products:
+                a = Review.objects.filter(product_id=i.id)
+                if len(a) != 0:
+                    i.rating = 0
+                    for d in a:
+                        i.rating += d.rating
+                    i.rating = i.rating/len(a)
+                    i.save()
+
+            ab = ReviewSerializer(aaa)
+            return Response(ab.data)
+        except Exception as arr:
+            data = {
+                'error':f"{arr}"
+            }
+            return Response(data)
+
+    
+@api_view(['POST'])
+def contactus(request):
+    first_name = request.data['first_name']
+    last_name = request.data['last_name']
+    email = request.data['email']
+    subject = request.data['subject']
+    message = request.data['message']
+    ContactUs.objects.create(
+        first_name = first_name,
+        last_name = last_name,
+        email = email,
+        subject = subject,
+        message = message,
+    )
+    return Response(status=200)
+
+
+
+
+def Index(request):
+    
+    return render(request, 'index.html')
+
+
+def Productt(request):
+
+    return render(request, 'product.html')
+
+
+def AddProductt(request):
+
+    return render(request, 'add-products.html')

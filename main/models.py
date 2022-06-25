@@ -87,7 +87,7 @@ class Product(models.Model):
 
 
 class Review(models.Model):
-    rating = models.FloatField(default=0,
+    rating = models.IntegerField(default=0,
         validators=[
             MaxValueValidator(5),
             MinValueValidator(0)
@@ -97,7 +97,7 @@ class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    date =  models.DateField(auto_now_add=True, unique=True)
+    date =  models.DateField(auto_now_add=True)
 
 
 class ContactUs(models.Model):
