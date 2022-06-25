@@ -10,9 +10,8 @@ class Country(models.Model):
 
 class User(AbstractUser):
     type = models.IntegerField(choices=(
-        (1, 'Director'),
-        (2, 'Manager'),
-        (3, 'User'),
+        (1, 'Manager'),
+        (2, 'User'),
     ), default=3)
     phone = models.IntegerField(null=True, blank=True)
 
@@ -113,7 +112,7 @@ class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.product.title
+        return self.product.name
 
 
 class Card(models.Model):
@@ -122,7 +121,7 @@ class Card(models.Model):
     quantity = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.product.title
+        return self.product.name
 
 
 class Blog(models.Model):
@@ -136,7 +135,7 @@ class Blog(models.Model):
 
 class Reply(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
-    website = models.CharField(max_length=255)
+    website = models.URLField(max_length=500)
     coment = models.TextField()
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -171,7 +170,8 @@ class Abouttext(models.Model):
 
 class Delivery_Options(models.Model):
     delivery = models.CharField(max_length=255)
-
+    def __str__(self):
+        return self.delivery
 
 class Order(models.Model):
     order_number = models.CharField(max_length=255)
@@ -181,6 +181,6 @@ class Order(models.Model):
         (2, 'Processing')
     ), default=2)
     order_data = models.DateField()
-    delivery_options = models.ForeignKey(Delivery_Options, on_delete=models.PROTECT)
+    delivery_options = models.ForeignKey(Delivery_Options, on_delete=models.PROTECT, blank=True, null=True)
     delivery_address = models.ForeignKey(User_address, on_delete=models.PROTECT)
     contact = PhoneField(blank=True, help_text='phone number')

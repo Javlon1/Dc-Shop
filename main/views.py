@@ -1,11 +1,20 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view, APIView
+from rest_framework.authtoken.models import Token
+from django.shortcuts import render,redirect
 from rest_framework.response import Response
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
-from .serializer import *
-from rest_framework import viewsets
-from . import models
-
+from rest_framework.decorators import api_view, APIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework import status
+from django.http import Http404
+from main.models import *
+from main.serializer import *
+from django.contrib.auth import authenticate
+from django.contrib.auth import login,logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from random import *
+from .models import User as Users
+import random 
+import datetime
 
 class Slider(ListAPIView):
     queryset = Product.objects.all()
@@ -110,6 +119,36 @@ def contactus(request):
     return Response(status=200)
 
 
+
+# def Login(request):
+#     if request.user.is_authenticated:
+#         return redirect('home')
+#     if request.method == "POST":
+#         username =request.POST.get("username")
+#         password = request.POST.get ('password')
+#         employe = User.objects.filter(username=username)
+#         if employe.count() > 0:
+#             if employe[0].check_password(password):
+#                 login(request,employe[0])
+
+
+class CardView(APIView):
+    def post(self, request):
+        product = request.data['product']
+        user = request.data['user']
+        quantity = request.data['quantity']
+        Card.objects.create(
+            product_id=product,
+            user_id=user,
+            quantity=quantity,
+        )
+        return Response(status=200)
+    
+    def get(self, request):
+        user = request.GET.get("user")
+        uss = Card.objects.filter(user_id=user)
+        us = CardSerializer(uss, many=True)
+        return Response(us.data)
 
 
 def Index(request):
