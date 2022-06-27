@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-        <!-- Main Content -->
+
+<!-- Main Content -->
 		<div class="page-wrapper">
 			<div class="container">
 				<!-- Title -->	
@@ -22,24 +23,27 @@
 				<!-- Product Row One -->
 				<div class="row">
        				<div class="col-lg-2 col-md-4 col-sm-4 col-xs-6">
-						<div class="panel panel-default card-view pa-0">
-							<div class="panel-wrapper collapse in">
-								<div class="panel-body pa-0">
-									<article class="col-item">
-										<div class="photo">
+						<div class="panel panel-default card-view pa-0" >
+							<div class="panel-wrapper collapse in" >
+								<div class="panel-body pa-0" >
+									<article class="col-item" >
+										{% for i in product %}
+										<div class="photo" >
 											<div class="options">
 												<a href="{% url 'add-product' %}" class="font-18 txt-grey mr-10 pull-left"><i class="zmdi zmdi-edit"></i></a>
 												<a href="javascript:void(0);" class="font-18 txt-grey pull-left sa-warning"><i class="zmdi zmdi-close"></i></a>
 											</div>
-											<img src="../img/chair.jpg" class="img-responsive" alt="Product Image" />
-										</div>
-										<div class="info">
-											<h6>Circle chair</h6>
+											{% for j in i.image.all %}
+											<img src="{{j.image.url}}" class="img-responsive" alt="Product Image" />
+											{% endfor %}
+											<h6>{{i.name}}</h6>
 											<div class="product-rating inline-block">
-												<a href="javascript:void(0);" class="font-12 txt-success zmdi zmdi-star mr-0"></a><a href="javascript:void(0);" class="font-12 txt-success zmdi zmdi-star mr-0"></a><a href="javascript:void(0);" class="font-12 txt-success zmdi zmdi-star mr-0"></a><a href="javascript:void(0);" class="font-12 txt-success zmdi zmdi-star mr-0"></a><a href="javascript:void(0);" class="font-12 txt-success zmdi zmdi-star-outline mr-0"></a>
+												<b-form-rating v-model="{{i.rating}}" variant="warning" class="mb-2"></b-form-rating>
+												<h1 class="font-12 txt-success zmdi zmdi-star mr-0">{{i.rating}}</h1>
 											</div>
-											<span class="head-font block text-warning font-16">$150</span>
+											<span class="head-font block text-warning font-16">{{i.price}}</span>
 										</div>
+										{% endfor %}
 									</article>
 								</div>
 							</div>	

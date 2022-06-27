@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 seria = serializers.ModelSerializer
 
+
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country

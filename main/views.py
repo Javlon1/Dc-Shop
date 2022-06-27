@@ -1,4 +1,5 @@
 from itertools import product
+from multiprocessing import context
 from rest_framework.authtoken.models import Token
 from django.shortcuts import render,redirect
 import requests
@@ -21,6 +22,27 @@ from .models import User as Users
 import random 
 import datetime
 
+
+class CountryView(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class EmailView(CreateAPIView):
+    queryset = Email.objects.all()
+    serializer_class = EmailSerializer
+
+
+class CategoryView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class ImageView(ListAPIView):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+
+
 class Slider(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -30,11 +52,13 @@ class Slider(ListAPIView):
         ser = ProductSerializer(slider, many=True)
         return Response(ser.data)
 
+
 @api_view(['GET'])
 def latest_products(request):
     product = Product.objects.all().order_by("-id")[:6]
     prod = ProductSerializer(product, many=True)
     return Response(prod.data)
+
 
 @api_view(['GET'])
 def filter_by_price(request):
@@ -44,22 +68,20 @@ def filter_by_price(request):
     p = ProductSerializer(pr, many=True)
     return Response(p.data)
 
+
 class ProductDetail(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    # def retrieve(self, request, pk):
-    #     products = Product.objects.all()
-    #     all = []
-    #     for product in products:
-    #         data = {
-    #             "Product Info": product
-    #         }
-    #     dat = {
-    #         data,
-    #         "Similar Products":
-            
-    #     }
+    def retrieve(self, request, pk):
+        pr = Product.objects.get(id=pk)
+        products = Product.objects.filter(category=pr.category)
+        DATA = {
+            "Product":ProductSerializer(pr).data,
+            "Similar Products":ProductSerializer(products,many=True).data,            
+        }
+        return Response(DATA)
+
 
 class RewievGEt(APIView):
     def get(self, request):
@@ -71,6 +93,7 @@ class RewievGEt(APIView):
                 i.rating += d.rating
                 Data[i.name] = i.rating/len(a)                
         return Response(Data)
+
 
 class RewievPost(APIView):
     def post(self, request):
@@ -106,7 +129,7 @@ class RewievPost(APIView):
             }
             return Response(data)
 
-    
+
 @api_view(['POST'])
 def contactus(request):
     first_name = request.data['first_name']
@@ -122,6 +145,38 @@ def contactus(request):
         message = message,
     )
     return Response(status=200)
+
+
+# def Login(request):
+#     if request.user.is_authenticated:
+#         return redirect('home')
+#     if request.method == "POST":
+#         username =request.POST.get("username")
+#         password = request.POST.get ('password')
+#         employe = User.objects.filter(username=username)
+#         if employe.count() > 0:
+#             if employe[0].check_password(password):
+#                 login(request,employe[0])
+
+
+class CardView(APIView):
+    def post(self, request):
+        product = request.data['product']
+        user = request.data['user']
+        quantity = request.data['quantity']
+        Card.objects.create(
+            product_id=product,
+            user_id=user,
+            quantity=quantity,
+        )
+        return Response(status=200)
+    
+    def get(self, request):
+        user = request.GET.get("user")
+        uss = Card.objects.filter(user_id=user)
+        us = CardSerializer(uss, many=True)
+        return Response(us.data)
+    
 
 @api_view(['post'])
 @permission_classes([IsAuthenticated])
@@ -159,35 +214,114 @@ def CheckOut(request):
     resp = requests.post(url, data=params)
     return Response(DATA['order'])
 
-# def Login(request):
-#     if request.user.is_authenticated:
-#         return redirect('home')
-#     if request.method == "POST":
-#         username =request.POST.get("username")
-#         password = request.POST.get ('password')
-#         employe = User.objects.filter(username=username)
-#         if employe.count() > 0:
-#             if employe[0].check_password(password):
-#                 login(request,employe[0])
+
+@api_view(['GET'])
+def total_card(request):
+    user = request.GET.get("user")
+    card = Card.objects.filter(user_id=user)
+    DATA = {
+        "products":[],
+        "total_price":0,
+    }
+    for i in card:
+        DATA['total_price'] += i.product.price * i.quantity 
+        ser = ProductSerializer(i.product)
+        DATA['products'].append(ser.data) 
+    
+    return Response(DATA)
 
 
-class CardView(APIView):
+class WishlistView(APIView):
     def post(self, request):
         product = request.data['product']
         user = request.data['user']
-        quantity = request.data['quantity']
-        Card.objects.create(
+        Wishlist.objects.create(
             product_id=product,
             user_id=user,
-            quantity=quantity,
         )
         return Response(status=200)
     
     def get(self, request):
         user = request.GET.get("user")
-        uss = Card.objects.filter(user_id=user)
-        us = CardSerializer(uss, many=True)
+        uss = Wishlist.objects.filter(user_id=user)
+        us = WishlistSerializer(uss, many=True)
         return Response(us.data)
+
+
+@api_view(['post'])
+def Login(request):
+    username =request.POST.get("username")
+    password = request.POST.get ('password')
+    try:
+        user = Users.objects.get(username=username)
+        if user.check_password(password):
+            DATA = {
+                "token":str(Token.objects.get(user=user))
+            }
+            return Response(DATA)
+        else:
+            return Response(status=401)
+    except:
+        return Response(status=401)
+
+
+class BlogView(APIView):
+    def get(self, request):
+        blog = Blog.objects.all().order_by("-id")
+        bl = BlogSerizlizer(blog, many=True)
+        return Response(bl.data)
+
+
+class BlogtextView(APIView):
+    def post(self, request):
+        text = BlogtextSerizlizer(data=request.data)
+        if text.is_valid():
+            text.save()
+            return Response(text.data, status=status.HTTP_201_CREATED)
+        return Response(text.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AboutView(APIView):
+    def get(self, request):
+        about = About.objects.all().order_by("-id")
+        bl = AboutSerizlizer(about, many=True)
+        return Response(bl.data)
+
+
+class AbouttextView(APIView):
+    def post(self, request):
+        text = AbouttextSerizlizer(data=request.data)
+        if text.is_valid():
+            text.save()
+            return Response(text.data, status=status.HTTP_201_CREATED)
+        return Response(text.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReplaySend(APIView):
+    def post(self, request):
+        replay = ReplySerizlizer(data=request.data)
+        if replay.is_valid():
+            replay.save()
+            return Response(replay.data, status=status.HTTP_201_CREATED)
+        return Response(replay.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentSend(APIView):
+    def post(self, request):
+        comment = CommentSerizlizer(data=request.data)
+        if comment.is_valid():
+            comment.save()
+            return Response(comment.data, status=status.HTTP_201_CREATED)
+        return Response(comment.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderSend(APIView):
+    def post(self, request):
+        order = OrderSerizlizer(data=request.data)
+        if order.is_valid():
+            order.save()
+            return Response(order.data, status=status.HTTP_201_CREATED)
+        return Response(order.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def Index(request):
@@ -196,8 +330,10 @@ def Index(request):
 
 
 def Productt(request):
-
-    return render(request, 'product.html')
+    context = {
+        'product': Product.objects.all().order_by('-id')
+    }
+    return render(request, 'product.html', context)
 
 
 def AddProductt(request):

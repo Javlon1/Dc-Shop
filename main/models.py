@@ -37,6 +37,9 @@ class User_address(models.Model):
     phone = PhoneField(blank=True, help_text='phone number')
     email = models.EmailField()
 
+    def __str__(self):
+        return self.user.username
+
 
 class Info(models.Model):
     logo = models.ImageField(upload_to='Info/')
