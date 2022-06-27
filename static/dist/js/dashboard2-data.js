@@ -587,7 +587,7 @@ var echartsConfig = function() {
 $(window).on("load",function(){
 	window.setTimeout(function(){
 		$.toast({
-			heading: 'Welcome to zapily',
+			heading: 'Welcome to Shoppe',
 			text: 'Use the predefined ones, or specify a custom position object.',
 			position: 'top-left',
 			loaderBg:'#f8b32d',

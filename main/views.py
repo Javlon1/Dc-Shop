@@ -339,3 +339,8 @@ def Productt(request):
 def AddProductt(request):
 
     return render(request, 'add-products.html')
+
+
+def EditProductt(request):
+
+    return render(request, 'edit.html')

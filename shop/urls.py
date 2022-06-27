@@ -32,6 +32,7 @@ urlpatterns = [
     path('', Index, name='home'),
     path('product/', Productt, name='product'),
     path('add-product/', AddProductt, name='add-product'),
+    path('edit-product/', EditProductt, name='edit-product'),
     
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

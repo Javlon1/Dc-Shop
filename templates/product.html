@@ -22,19 +22,19 @@
 				<!-- /Title -->
 				<!-- Product Row One -->
 				<div class="row">
+					{% for i in product %}
        				<div class="col-lg-2 col-md-4 col-sm-4 col-xs-6">
 						<div class="panel panel-default card-view pa-0">
 							<div class="panel-wrapper collapse in">
 								<div class="panel-body pa-0">
 									<article class="col-item">
-										{% for i in product %}
 										<div class="photo">
 											<div class="options">
-												<a href="{% url 'add-product' %}" class="font-18 txt-grey mr-10 pull-left"><i class="zmdi zmdi-edit"></i></a>
+												<a href="{% url 'edit-product' %}" class="font-18 txt-grey mr-10 pull-left"><i class="zmdi zmdi-edit"></i></a>
 												<a href="javascript:void(0);" class="font-18 txt-grey pull-left sa-warning"><i class="zmdi zmdi-close"></i></a>
 											</div>
 											{% for j in i.image.all %}
-											<img src="{{j.image.url}}" class="img-responsive" alt="Product Image" />
+											<img src="{{j.image.url}}" class="img-responsive" alt="Product Image"/>
 											{% endfor %}
 										</div>
 										<div class="info">
@@ -45,12 +45,12 @@
 											</div>
 											<span class="head-font block text-warning font-16">{{i.price}}</span>
 										</div>
-										{% endfor %}
 									</article>
 								</div>
 							</div>	
 						</div>	
 					</div>				
+					{% endfor %}
 				</div>	
 				<!-- /Product Row Four -->
 			</div>
