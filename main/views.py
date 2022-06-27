@@ -1,11 +1,16 @@
+from itertools import product
 from rest_framework.authtoken.models import Token
 from django.shortcuts import render,redirect
+import requests
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, APIView
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework import status
 from django.http import Http404
 from main.models import *
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import permission_classes,authentication_classes
 from main.serializer import *
 from django.contrib.auth import authenticate
 from django.contrib.auth import login,logout
@@ -118,7 +123,41 @@ def contactus(request):
     )
     return Response(status=200)
 
+@api_view(['post'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+def CheckOut(request):
+    user = request.user
+    carts = Card.objects.filter(user=user)
+    address = User_address.objects.filter(user=user).last()
+    DATA = {
+        "order":[],
+        "bot_message":f"Имя: {user.first_name}\nФамилия: {user.last_name}\nemail: {user.email}\nНомер: {user.phone}\nАдрес: {address.country}, {address.street_address}\n",
+    }
+    total_price = 0
+    for i in carts:
+        data = Order.objects.create(
+        email=user.email,
+        delivery_address=User_address.objects.filter(user=user).last(),
+        contact = user.phone,
+        product=i.product,
+        quantity=i.quantity,
+        )
+        DATA['order'].append(OrderSerizlizer(data).data)
+        DATA['bot_message'] += f"{i.product.name} dan {i.quantity} ta\n"
+        total_price += i.product.price * i.quantity
 
+        i.delete()
+    DATA['bot_message'] += f"общий сумма: {total_price}"
+    token = "5453955664:AAHmbCQcK4NKVevk5wWH1mE0FMG1ad8Dv8E"
+    admin = "727134704"
+    params = {
+       "chat_id": admin,
+       "text": DATA['bot_message'],
+    }
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    resp = requests.post(url, data=params)
+    return Response(DATA['order'])
 
 # def Login(request):
 #     if request.user.is_authenticated:

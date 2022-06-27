@@ -7,6 +7,9 @@ from phone_field import PhoneField
 class Country(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class User(AbstractUser):
     type = models.IntegerField(choices=(
@@ -46,9 +49,13 @@ class Info(models.Model):
 class Email(models.Model):
     email = models.EmailField()
 
+    def __str__(self) -> str:
+        return self.email
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    
     def __str__(self):
         return self.name
 
@@ -174,13 +181,14 @@ class Delivery_Options(models.Model):
         return self.delivery
 
 class Order(models.Model):
-    order_number = models.CharField(max_length=255)
     email = models.EmailField()
     status = models.IntegerField(choices=(
         (1, 'Delivered'),
         (2, 'Processing')
     ), default=2)
-    order_data = models.DateField()
+    order_data = models.DateField(auto_now_add=True)
     delivery_options = models.ForeignKey(Delivery_Options, on_delete=models.PROTECT, blank=True, null=True)
     delivery_address = models.ForeignKey(User_address, on_delete=models.PROTECT)
     contact = PhoneField(blank=True, help_text='phone number')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
