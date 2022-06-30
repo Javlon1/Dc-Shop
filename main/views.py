@@ -325,22 +325,63 @@ class OrderSend(APIView):
 
 
 def Index(request):
+    context = {
+        'product': Product.objects.all().order_by('-id'),
+        'info': Info.objects.last()
+    }
     
-    return render(request, 'index.html')
+    return render(request, 'index.html', context)
 
 
 def Productt(request):
     context = {
-        'product': Product.objects.all().order_by('-id')
+        'product': Product.objects.all().order_by('-id'),
+        'info': Info.objects.last()
     }
     return render(request, 'product.html', context)
 
 
+def Blogg(request):
+    context = {
+        'product': Product.objects.all().order_by('-id'),
+        'info': Info.objects.last()
+    }
+    return render(request, 'blog.html', context)
+
+
 def AddProductt(request):
+    context = {
+        'product': Product.objects.all().order_by('-id'),
+        'info': Info.objects.last()
+    }
 
-    return render(request, 'add-products.html')
+    return render(request, 'add-products.html', context)
 
 
-def EditProductt(request):
-
-    return render(request, 'edit.html')
+def EditProductt(request, pk):
+    product = Product.objects.get(id=pk)
+    if request.method == 'POST':
+        product = Product.objects.get(id=pk)
+        product.name = request.POST['name']
+        product.price = request.POST['price']
+        product.text = request.POST['text']
+        product.discount = request.POST['discount']
+        imgs = []
+        for i in request.POST.getlist("images"):
+            imgs.append(Image.objects.get(id=i))
+        product.image.set(imgs)
+        product.category = Category.objects.get(id=request.POST.get('category'))
+        product.description = request.POST.get('description')
+        product.weight = request.POST.get('weight')
+        product.dimentions = request.POST.get('dimentions')
+        product.colours = request.POST.get('colours')
+        product.material = request.POST.get('material')
+        product.save()
+        return redirect("product")
+    context = {
+        'product': product,
+        "info": Info.objects.last(),
+        "categorys":Category.objects.all().order_by("-id"),
+        "images":Image.objects.all(),
+    }
+    return render(request, 'edit-product.html', context)

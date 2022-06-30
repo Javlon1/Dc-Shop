@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+      <div class="page-wrapper">
+      <div class="container">
+          <div class="row heading-bg">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+              <h5 class="txt-dark">edit-products</h5>
+            </div>
+            <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+              <ol class="breadcrumb">
+              <li><a href="{% url 'home' %}">Home</a></li>
+              <li class="active"><span>edit-products</span></li>
+              </ol>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="panel panel-default card-view">
+                <div class="panel-wrapper collapse in">
+                  <div class="panel-body">
+                    <div class="form-wrap">
+                      <form action="{% url 'edit-product' product.id %}" method="post" enctype="multipart/form-data"> 
+                        {% csrf_token %}
+                        <h6 class="txt-dark capitalize-font"><i class="zmdi zmdi-info-outline mr-10"></i>edit product</h6>
+                        <hr class="light-grey-hr"/>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label mb-10">Edit Product Name</label>
+                              <input value="{{ product.name }}" name="name" type="text" id="firstName" class="form-control" placeholder="Edit Product Name">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label mb-10">Edit text</label>
+                              <input type="text" name="text" value={{product.text}} id="lastName" class="form-control" placeholder="Edit text">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label mb-10">Edit Category</label>
+                              <select class="form-control" name="category" data-placeholder="Choose a Category" tabindex="1">
+                                {% for i in categorys %}
+                                {% if i.id == product.category.id %}
+                                <option selected name="" value="{{i.id}}">{{i.name}}</option>
+                                {% else %}
+                                <option name="" value="{{i.id}}">{{i.name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label mb-10">Edit Price</label>
+                              <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-money"></i></div>
+                                <input type="number" name="price" value="{{product.price}}" class="form-control" id="exampleInputuname" placeholder="Edit Price">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label mb-10">Edit Discount</label>
+                              <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-cut"></i></div>
+                                <input type="number" name="discount" value="{{product.discount}}" class="form-control" id="exampleInputuname_1" placeholder="Edit Discount">
+                              </div>
+                              </div>
+                          </div>
+                        </div>
+						            <div class="seprator-block"></div>
+						            <h6 class="txt-dark capitalize-font"><i class="zmdi zmdi-collection-image mr-10"></i>edit image</h6>
+                        <select class="form-control" name="images" data-placeholder="Choose a Category" multiple tabindex="1">
+                        {% for ii in images %}
+                        {% if ii.id in product.image %}
+                        <option selected name="" value="{{ii.id}}" style="background-image:url('{{ii.image.url}}');background-repeat: no-repeat; height: 200px; width: 270px; background-size: cover; margin-bottom: 10px; color: rgb(51, 255, 0);"></option>
+                        {% else %}
+                        <option name="" value="{{ii.id}}" style="background-image:url('{{ii.image.url}}');background-repeat: no-repeat; height: 200px; width: 270px; background-size: cover; margin-bottom: 10px; color: rgb(51, 255, 0);"></option>
+                        {% endif %}
+                        {% endfor %}
+                        </select>
+						            <div class="seprator-block"></div>
+						            <h6 class="txt-dark capitalize-font"><i class="zmdi zmdi-comment-text mr-10"></i>Edit Product Description</h6>
+						            <hr class="light-grey-hr"/>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                            <textarea class="form-control" name="description" value="{{product.description}}" rows="4"></textarea>
+                            </div>
+                          </div>
+                        </div>
+						            <div class="seprator-block"></div>
+						            <h6 class="txt-dark capitalize-font"><i class="zmdi zmdi-calendar-note mr-10"></i>Edit Aditional information</h6>
+						            <hr class="light-grey-hr"/>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                            <input type="number" value="{{product.weight}}" name="weight" class="form-control" placeholder="Weight">
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                            <input type="text" value="{{product.dimentions}}" name="dimentions" class="form-control" placeholder="Dimentions">
+                            </div>
+                          </div>
+                        </div>
+						            <div class="row">
+                            <div class="col-sm-6">
+                              <div class="form-group">
+                              <input type="text" value="{{product.colours}}" name="colours" class="form-control" placeholder="Colours">
+                              </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="form-group">
+                              <input type="text" value="{{product.material}}" name="material" class="form-control" placeholder="Material">
+                              </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                          <button class="btn btn-success btn-icon left-icon mr-10 pull-left"> <i class="fa fa-check"></i> <span>save</span></button>
+                          <div class="clearfix"></div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endblock %}
