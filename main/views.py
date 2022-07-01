@@ -324,10 +324,12 @@ class OrderSend(APIView):
         return Response(order.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# templates
+
 def Index(request):
     context = {
         'product': Product.objects.all().order_by('-id'),
-        'info': Info.objects.last()
+        'info': Info.objects.last(),
     }
     
     return render(request, 'index.html', context)
@@ -336,7 +338,7 @@ def Index(request):
 def Productt(request):
     context = {
         'product': Product.objects.all().order_by('-id'),
-        'info': Info.objects.last()
+        'info': Info.objects.last(),
     }
     return render(request, 'product.html', context)
 
@@ -344,16 +346,74 @@ def Productt(request):
 def Blogg(request):
     context = {
         'product': Product.objects.all().order_by('-id'),
-        'info': Info.objects.last()
+        'info': Info.objects.last(),
     }
     return render(request, 'blog.html', context)
 
 
-def AddProductt(request):
+def Add_blog(request):
+
     context = {
-        'product': Product.objects.all().order_by('-id'),
-        'info': Info.objects.last()
+        'info': Info.objects.last(),
+        'blog': Blog.objects.all(),
     }
+
+    return render(request, 'add-blog.html', context)
+
+
+def Aboutt(request):
+
+    context = {
+        'info': Info.objects.last(),
+    }
+
+    return render(request, 'about.html', context)
+
+
+def Add_about(request):
+
+    context = {
+        'info': Info.objects.last(),
+    }
+
+    return render(request, 'add-about.html', context)
+
+
+
+def AddProductt(request):
+    product = Product.objects.all().order_by('-id')
+    images = Image.objects.all().order_by('-id')
+
+
+    context = {
+        "info": Info.objects.last(),
+        'product':product,
+        'images':images,
+    }
+    if request.method == 'POST':
+        data = request.data
+        list = data.getlist("image")
+        image = []
+        for i in list:
+            image.append(Image.objects.create(id=i))
+        create = Product.objects.create(
+            name = request.POST.get("name"),
+            price = request.POST.get("price"),
+            text = request.POST.get("text"),
+            discount = request.POST.get("discount"),
+            category = Category.objects.get(id=request.POST.get('category')),
+            SKU = request.POST.get("SKU"),
+            description = request.POST.get("description"),
+            weight = request.POST.get("weight"),
+            dimentions = request.POST.get("dimentions"),
+            colours = request.POST.get("colours"),
+            material = request.POST.get("material"),
+            is_active = request.POST.get("is_active"),
+        )
+        create.image.set(image)
+        create.save()
+        return redirect("product")
+
 
     return render(request, 'add-products.html', context)
 

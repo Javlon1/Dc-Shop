@@ -39,6 +39,9 @@ urlpatterns = [
     path('add-product/', AddProductt, name='add-product'),
     path('edit-product/<int:pk>/', EditProductt, name='edit-product'),
     path('blog/', Blogg, name='blog'),
+    path('add-blog/', Add_blog, name='add-blog'),
+    path('add-about/', Add_about, name='add-about'),
+    path('about/', Aboutt, name='about'),
     
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

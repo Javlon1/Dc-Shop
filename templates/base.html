@@ -79,6 +79,9 @@
 					<a href="{% url 'product' %}" data-toggle="collapse" data-target="#maps_dr"><div class="pull-left"><i class="zmdi zmdi-map mr-20"></i><span class="right-nav-text">Products</span></div><div class="clearfix"></div></a>
 				</li>
 				<li>
+					<a href="{% url 'about' %}" data-toggle="collapse" data-target="#maps_dr"><div class="pull-left"><i class="zmdi zmdi-map mr-20"></i><span class="right-nav-text">about</span></div><div class="clearfix"></div></a>
+				</li>
+				<li>
 					<a href="{% url 'blog' %}" data-toggle="collapse" data-target="#maps_dr"><div class="pull-left"><i class="zmdi zmdi-map mr-20"></i><span class="right-nav-text">blog</span></div><div class="clearfix"></div></a>
 				</li>
 				<li><hr class="light-grey-hr mb-10"/></li>
@@ -89,16 +92,23 @@
 				<li>
 					<a href="{% url 'add-product' %}" data-toggle="collapse" data-target="#form_dr"><div class="pull-left"><i class="zmdi zmdi-edit mr-20"></i><span class="right-nav-text">Add Product</span></div><div class="clearfix"></div></a>
 				</li>
+				<li>
+					<a href="{% url 'add-about' %}" data-toggle="collapse" data-target="#form_dr"><div class="pull-left"><i class="zmdi zmdi-edit mr-20"></i><span class="right-nav-text">Add about</span></div><div class="clearfix"></div></a>
+				</li>
+				<li>
+					<a href="{% url 'add-blog' %}" data-toggle="collapse" data-target="#form_dr"><div class="pull-left"><i class="zmdi zmdi-edit mr-20"></i><span class="right-nav-text">Add blog</span></div><div class="clearfix"></div></a>
+				</li>
 			</ul>
 		</div>
         {% block content %}
+
 
 
         {% endblock %}
 			<footer class="footer container-fluid pl-30 pr-30">
 				<div class="row">
 					<div class="col-sm-12">
-						<p>2022 &copy; Shoppe. Pampered by Jalvon</p>
+						<p>2022 &copy; Shoppe. Pampered</p>
 					</div>
 				</div>
 			</footer>
